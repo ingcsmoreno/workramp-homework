@@ -11,12 +11,10 @@ class RootStack(Stack):
 
         network = VPCStack(
             self,
-            "VPCk",
-            # env=deployment-env
+            "VPC",
         )
         BastionStack(
             self,
             "Bastion",
             network.vpc,
-            # env=deployment-env
         )
