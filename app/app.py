@@ -3,7 +3,9 @@
 
 import aws_cdk as cdk
 
-from app.vpc_stack import VPCStack
+# from app.vpc_stack import VPCStack
+# from app.bastion_stack import BastionStack
+from app.root_stack import RootStack
 
 # deployment-env=cdk.Environment(
 #    account=os.environ.get("CDK_DEPLOY_ACCOUNT", os.environ["CDK_DEFAULT_ACCOUNT"]),
@@ -11,10 +13,21 @@ from app.vpc_stack import VPCStack
 # )
 
 app = cdk.App()
-VPCStack(
+RootStack(
     app,
-    "WorkRamp-VPC-Stack",
+    "WorkRamp-Stack",
     # env=deployment-env
 )
+# NETWORK = VPCStack(
+#    app,
+#    "WorkRamp-VPC-Stack",
+#    # env=deployment-env
+# )
+# BASTION = BastionStack(
+#    app,
+#    "WorkRamp-Bastion-Stack",
+#    NETWORK.vpc,
+#    # env=deployment-env
+# )
 
 app.synth()
