@@ -1,0 +1,9 @@
+version: "3.8"
+services:
+  workramp:
+    build: ./docker
+    stdin_open: true 
+    tty: true
+    volumes:
+    - ./:/source
+
