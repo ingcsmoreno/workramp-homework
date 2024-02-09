@@ -1,10 +1,10 @@
 # WorkRamp Homework
 
-This repocitory contains X subprojects: 
+This repocitory contains X subprojects:
 
 ## Subprojects
 
-- 
+-
 
 ## Architecture
 
