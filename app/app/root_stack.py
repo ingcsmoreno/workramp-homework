@@ -11,10 +11,8 @@ class RootStack(Stack):
         super().__init__(scope, construct_id, **kwargs)
 
         # Nested stacks
-        network = VPCStack(
-            self,
-            "VPC",
-        )
+        network = VPCStack(self, "VPC")
+
         bastion = BastionStack(self, "Bastion", network.vpc, network.frontSG)
 
         service = ServiceStack(self, "Service", network.vpc, network.backSG)
