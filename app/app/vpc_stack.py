@@ -1,8 +1,8 @@
-from aws_cdk import CfnOutput, Stack, aws_ec2 as ec2
+from aws_cdk import NestedStack, aws_ec2 as ec2
 from constructs import Construct
 
 
-class VPCStack(Stack):
+class VPCStack(NestedStack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
@@ -26,35 +26,9 @@ class VPCStack(Stack):
             nat_gateways=1,
         )
 
-        self.private_nacl = ec2.NetworkAcl(
-            self,
-            "PrivateNAcl",
-            vpc=self.vpc,
-            subnet_selection=ec2.SubnetSelection(subnets=self.vpc.private_subnets),
-        )
-
-        for id, subnet in enumerate(self.vpc.public_subnets, start=1):
-            self.private_nacl.add_entry(
-                "PrivateNACLIngress{}".format(id * 100),
-                rule_number=id * 100,
-                cidr=ec2.AclCidr.ipv4(subnet.node.default_child.cidr_block),
-                traffic=ec2.AclTraffic.tcp_port_range(0, 65535),
-                direction=ec2.TrafficDirection.INGRESS,
-                rule_action=ec2.Action.ALLOW,
-            )
-
-        self.private_nacl.add_entry(
-            "PrivateNACLEgressALL",
-            rule_number=100,
-            cidr=ec2.AclCidr.ipv4("0.0.0.0/0"),
-            traffic=ec2.AclTraffic.tcp_port_range(0, 65535),
-            direction=ec2.TrafficDirection.EGRESS,
-            rule_action=ec2.Action.ALLOW,
-        )
-
         self.frontSG = ec2.SecurityGroup(
             self,
-            "BackendSecurityGroup",
+            "FrontendSecurityGroup",
             vpc=self.vpc,
             description="Allow web access",
             allow_all_outbound=True,
@@ -67,16 +41,21 @@ class VPCStack(Stack):
         self.frontSG.add_ingress_rule(
             ec2.Peer.any_ipv4(), ec2.Port.tcp(433), "allow HTTPS access from the world"
         )
+        self.frontSG.add_ingress_rule(
+            ec2.Peer.any_ipv4(), ec2.Port.tcp(22), "allow SSH access from the world"
+        )
 
         self.backSG = ec2.SecurityGroup(
             self,
-            "FrontendSecurityGroup",
+            "BackendSecurityGroup",
             vpc=self.vpc,
             description="Allow web access",
             allow_all_outbound=True,
             disable_inline_rules=True,
         )
-
-        CfnOutput(self, "VPCId", value=self.vpc.vpc_id)
-        CfnOutput(self, "FrontSGId", value=self.frontSG.security_group_id)
-        CfnOutput(self, "BackSGId", value=self.backSG.security_group_id)
+        self.frontSG.connections.allow_from(
+            self.frontSG, ec2.Port.tcp(80), "allow HTTP access"
+        )
+        self.frontSG.connections.allow_from(
+            self.frontSG, ec2.Port.tcp(443), "allow HTTPS access"
+        )
