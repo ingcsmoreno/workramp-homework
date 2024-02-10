@@ -1,15 +1,17 @@
 import aws_cdk as core
 import aws_cdk.assertions as assertions
 
-from app.vpc_stack import VPCStack
+from app.root_stack import RootStack
 
 # example tests. To run these tests, uncomment this file along with the example
 # resource in app/app_stack.py
 
 
-def test_sqs_queue_created():
+def test_stacks_created():
     app = core.App()
-    stack = VPCStack(app, "VPC")
+    stack = RootStack(app, "Root")
+
     template = assertions.Template.from_stack(stack)
 
-    template.has_resource_properties("AWS::EC2::VPC", {"CidrBlock": "10.0.0.0/16"})
+    template.resource_count_is("AWS::CloudFormation::Stack", 3)
+    template.resource_count_is("AWS::EC2::VPC", 0)

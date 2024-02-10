@@ -62,6 +62,20 @@ Here is how you can execute the code in this repo to add changes.
     cdk synth
     ```
 
+### Run Tests
+
+1. Install the dev dependencies
+
+    ```bash
+    pip install -r requirements-dev.txt
+    ```
+
+2. Run pytest:
+
+    ```bash
+    pytest
+    ```
+
 ### Deployment
 
 In order to get all the AWS assets created on the Cloud, execute the following steps:
