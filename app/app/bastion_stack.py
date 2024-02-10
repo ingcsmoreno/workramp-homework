@@ -6,6 +6,7 @@ class BastionStack(NestedStack):
     def __init__(self, scope: Construct, construct_id: str, vpc, sg, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
+        # bastion KeyPair for remote SSH Access
         self.key_pair = ec2.KeyPair(
             self,
             "KeyPair",
@@ -13,6 +14,7 @@ class BastionStack(NestedStack):
             type=ec2.KeyPairType.RSA,
         )
 
+        # Bastion EC2 Server
         self.bastion = ec2.BastionHostLinux(
             self,
             "bastionServer",
@@ -22,6 +24,7 @@ class BastionStack(NestedStack):
             instance_type=ec2.InstanceType(instance_type_identifier="t2.micro"),
         )
 
+        # Assign the new KeyPair to the EC2 Instance
         self.bastion.instance.instance.add_property_override(
             "KeyName", self.key_pair.key_pair_name
         )

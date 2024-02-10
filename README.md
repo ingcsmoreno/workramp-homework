@@ -1,10 +1,14 @@
 # WorkRamp Homework
 
-This repocitory contains X subprojects:
+This repocitory contains the source code of the proposed solution to the *Option 1* (VPC and Security Best Practices) problem from the WorkRank take home excercise.
 
 ## Architecture
 
+It concist of a Python CDK project with a Root stack with 3 nested Stacks:
 
+- VPC Stack: It creates the VPC, Subnets (private and public), and Security Groups (Frontend SG and Backend SG).
+- Bastion Stack: It creates an EC2 instance to work as a bastion server to securely access the resouces on the private network, and an KeyPair to authenticate on the server.
+- Service Stack: It creates an EC2 instance with a basic web server running in it. This was not requested as part of the solution, but was included in order to be able to test the security settings implemented.
 
 ## Dependencies
 
@@ -32,7 +36,11 @@ This will get your environment ready, and the git hooks installed.
 
 NOTE: Eventhough Docker and NodeJS are listed as dependencies, you don't really need to install then to run this project locally since a docker container will be used for that.
 
-## Local Environment
+## Contributing
+
+Here is how you can execute the code in this repo to add changes.
+
+### Local Environment
 
 1. Start the docker container using docker-compose:
 
@@ -54,7 +62,7 @@ NOTE: Eventhough Docker and NodeJS are listed as dependencies, you don't really 
     cdk synth
     ```
 
-## Deployment
+### Deployment
 
 In order to get all the AWS assets created on the Cloud, execute the following steps:
 
@@ -86,7 +94,7 @@ NOTE: It's assumed you have already executed all steps from the [Local Environme
     cdk deploy
     ```
 
-## Connect to Bastion
+### Connect to Bastion
 
 To connect to the Bastion server after deploying the stacks, follow these instructions:
 
@@ -133,5 +141,14 @@ To connect to the Bastion server after deploying the stacks, follow these instru
     i.e.:
 
     ```bash
-    curl 10.0.3.217
+    curl  10.0.3.217
     ```
+
+## Future Work
+
+Some feature to be implemented in the future:
+
+- [ ] A third group of subnets completely isolated for DBs.
+- [ ] Network ACLs for improved subnet security.
+- [ ] A bastion provisioning system to add specific users public keys in order to access it, instead of sharing the same key.
+- [ ] An ALB to access the web service running on the private subnets.
